@@ -59,7 +59,7 @@ def preprocess_text(text):
     tokens = word_tokenize(text)
     # removal stopwords, punkt and alnum
     clean_tokens = [
-        lemmatizer.lemmatize(word) for word in tokens if word.isalnum() and word not in stop_words
+        lemmatizer.lemmatize(word) for word in tokens if word.isalpha() and word not in stop_words
     ]
     # reconstruct tokens
     return " ".join(clean_tokens)
