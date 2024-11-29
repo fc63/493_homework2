@@ -57,7 +57,7 @@ def preprocess_text(text):
     text = text.lower()
     # tokenize text
     tokens = word_tokenize(text)
-    # removal stopwords, punkt and alnum
+    # removal stopwords, punkt and only alpha char
     clean_tokens = [
         lemmatizer.lemmatize(word) for word in tokens if word.isalpha() and word not in stop_words
     ]
