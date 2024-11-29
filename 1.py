@@ -43,6 +43,7 @@ nltk.download("wordnet", quiet=True)
 
 print("Libraries and NLTK datasets loaded!")
 
+# we assign data = our dataset and drop the columns and empty rows that we will not use
 data = pd.read_csv("news.csv")
 data = data.drop(["title", "Unnamed: 0"], axis=1)
 data = data.dropna()
@@ -66,3 +67,5 @@ def preprocess_text(text):
 
 # create new col for cleaned text
 data["cleaned_text"] = data["text"].apply(preprocess_text)
+
+data[["text", "cleaned_text", "label"]]
