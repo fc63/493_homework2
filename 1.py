@@ -5,9 +5,7 @@ uploaded = files.upload()
 
 data = pd.read_csv("news.csv")
 
-print(data.head())
-
-import numpy as np
+print("Succesful upload for news.csv")
 
 # sklearn library for tfidf vectorizer
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -80,3 +78,46 @@ X_train, X_test, y_train, y_test = train_test_split(
 
 print("Feature extraction and dataset splitting with TF-IDF completed!")
 print(f"Training set size: {X_train.shape}, Test set size: {X_test.shape}")
+
+# naive bayes classifier
+nb_model = MultinomialNB()
+nb_model.fit(X_train, y_train)  # model training
+y_pred_nb = nb_model.predict(X_test)  # system outputs
+
+# logistic regression classifier
+lr_model = LogisticRegression(max_iter=1000, random_state=42)
+lr_model.fit(X_train, y_train)  # model training
+y_pred_lr = lr_model.predict(X_test)  # system outputs
+
+# evaluation metrics
+def evaluate_model(y_true, y_pred, model_name):
+    print(f"--- {model_name} ---")
+    print(f"Accuracy: {accuracy_score(y_true, y_pred):.4f}")
+    print(f"Precision: {precision_score(y_true, y_pred):.4f}")
+    print(f"Recall: {recall_score(y_true, y_pred):.4f}")
+    print(f"F1-Score: {f1_score(y_true, y_pred):.4f}")
+    print("\nConfusion Matrix:")
+    cm = confusion_matrix(y_true, y_pred)
+    sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", xticklabels=["REAL", "FAKE"], yticklabels=["REAL", "FAKE"])
+    plt.xlabel("System Output")
+    plt.ylabel("Correct Label")
+    plt.title(f"Confusion Matrix for {model_name}")
+    plt.show()
+
+results = {
+    "Model": ["Naive Bayes", "Logistic Regression"],
+    "Accuracy": [accuracy_score(y_test, y_pred_nb), accuracy_score(y_test, y_pred_lr)],
+    "Precision": [precision_score(y_test, y_pred_nb), precision_score(y_test, y_pred_lr)],
+    "Recall": [recall_score(y_test, y_pred_nb), recall_score(y_test, y_pred_lr)],
+    "F1-Score": [f1_score(y_test, y_pred_nb), f1_score(y_test, y_pred_lr)],
+}
+
+results_df = pd.DataFrame(results)
+print(results_df)
+print("\n\n")
+
+# naive bayes evaluation
+evaluate_model(y_test, y_pred_nb, "Naive Bayes Classifier")
+
+# logistic regression evaluation
+evaluate_model(y_test, y_pred_lr, "Logistic Regression")
