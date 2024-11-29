@@ -52,13 +52,13 @@ data = data.dropna()
 stop_words = set(stopwords.words("english"))
 lemmatizer = WordNetLemmatizer()
 
-# text preprocessing for lowercase, tokenize, removal stopwords, punkt and alnum
+# text preprocessing for lowercase, tokenize, removal stopwords, punkt and non alpha char
 def preprocess_text(text):
     # lowercase text
     text = text.lower()
     # tokenize text
     tokens = word_tokenize(text)
-    # removal stopwords, punkt and only alpha char
+    # removal stopwords, punkt and non alpha char
     clean_tokens = [
         lemmatizer.lemmatize(word) for word in tokens if word.isalpha() and word not in stop_words
     ]
@@ -68,4 +68,15 @@ def preprocess_text(text):
 # create new col for cleaned text
 data["cleaned_text"] = data["text"].apply(preprocess_text)
 
-data[["text", "cleaned_text", "label"]]
+# TF-IDF vectorization
+tfidf_vectorizer = TfidfVectorizer(max_features=5000)  # we get maximum 5000 feature/word for tf idf
+X = tfidf_vectorizer.fit_transform(data["cleaned_text"]).toarray()  # TF-IDF feature matrix
+y = data["label"].map({"REAL": 0, "FAKE": 1})  # we assigned the labels as 1 and 0, 0 for real, 1 for fake, we will use boolean logic
+
+# we divide 80% of the vectorized data we obtain for the training set and 20% for the test set
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42, stratify=y
+)
+
+print("Feature extraction and dataset splitting with TF-IDF completed!")
+print(f"Training set size: {X_train.shape}, Test set size: {X_test.shape}")
